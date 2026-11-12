@@ -4,6 +4,7 @@ public class Application {
     public static void main(String[] args) {
         LoggingSetup.configure();
         OrderService service = new OrderService();
+
         runScenario("Создать O01 на 1200", () -> service.createOrder("O01", 1200));
         runScenario("Создать O02 на 500", () -> service.createOrder("O02", 500));
         runScenario("Создать заказ с пустым id", () -> service.createOrder(" ", 100));
@@ -27,8 +28,14 @@ public class Application {
     /** Обрабатывает ожидаемые ошибки одной операции; следующие сценарии продолжаются. */
     public static void runScenario(String title, Runnable action) {
         System.out.println("Сценарий: " + title);
-        // TODO 7: выполните action.run() внутри try; обработайте два типа исключений.
-        // Успех: "Операция выполнена". Ошибки: префикс из методички + ex.getMessage().
-        throw new UnsupportedOperationException("TODO: runScenario");
+
+        try {
+            action.run();
+            System.out.println("Операция выполнена");
+        } catch (ValidationException ex) {
+            System.out.println("Ошибка данных: " + ex.getMessage());
+        } catch (OrderOperationException ex) {
+            System.out.println("Операция отклонена: " + ex.getMessage());
+        }
     }
 }
